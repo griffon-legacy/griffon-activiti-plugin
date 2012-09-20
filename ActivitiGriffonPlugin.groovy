@@ -19,11 +19,11 @@
  */
 class ActivitiGriffonPlugin {
     // the plugin version
-    String version = '0.1'
+    String version = '0.2'
     // the version or versions of Griffon the plugin is designed for
-    String griffonVersion = '1.0.0 > *'
+    String griffonVersion = '1.1.0 > *'
     // the other plugins this plugin depends on
-    Map dependsOn = [datasource: '0.3']
+    Map dependsOn = [datasource: '0.4']
     // resources that are included in plugin packaging
     List pluginIncludes = []
     // the plugin license
@@ -65,6 +65,7 @@ giving you access to a `org.activiti.engine.ProcessEngine` object, with which yo
 to make calls configured process engines. Remember to make all these calls off the EDT
 otherwise your application may appear unresponsive when doing long computations
 inside the EDT.
+
 This method is aware of multiple engines. If no engineName is specified when calling
 it then the default process engine will be selected. Here are two example usages, the first
 queries against the default engine while the second queries an engine whose name has
@@ -77,7 +78,7 @@ been configured as 'internal'
             withActiviti('internal') { engineName, processEngine -> ... }
         }
     }
-    
+
 This method is also accessible to any component through the singleton `griffon.plugins.activiti.ActivitiConnector`.
 You can inject these methods to non-artifacts via metaclasses. Simply grab hold of a particular metaclass and call
 `ActivitiEnhancer.enhance(metaClassInstance, activitiProviderInstance)`.
@@ -142,7 +143,7 @@ fails regardless of the arguments it receives
         Object withActiviti(String engineName = 'default', Closure closure) { null }
         public <T> T withActiviti(String engineName = 'default', CallableWithArgs<T> callable) { null }
     }
-    
+
 This implementation may be used in the following way
 
     class MyServiceTests extends GriffonUnitTestCase {

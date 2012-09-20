@@ -16,19 +16,17 @@ griffon.project.dependency.resolution = {
         griffonHome()
         mavenCentral()
         mavenRepo 'https://maven.alfresco.com/nexus/content/repositories/activiti/'
+        mavenRepo 'http://repository.springsource.com/maven/bundles/release'
 
         // pluginDirPath is only available when installed
         // String basePath = pluginDirPath? "${pluginDirPath}/" : ''
         // flatDir name: "${pluginName}LibDir", dirs: ["${basePath}lib"]
     }
     dependencies {
-        String activitiVersion = '5.9'
+        String activitiVersion = '5.10'
         compile("org.activiti:activiti-engine:$activitiVersion") {
             excludes 'groovy', 'spring-beans'
         }
-/*
-<groupId>org.activiti</groupId><artifactId>activiti-engine</artifactId>
-*/
         compile "org.springframework:org.springframework.beans:$springVersion",
                 "org.springframework:org.springframework.asm:$springVersion",
                 "org.springframework:org.springframework.core:$springVersion"

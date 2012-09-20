@@ -23,6 +23,7 @@ import griffon.core.GriffonApplication
 import griffon.util.Environment
 import griffon.util.Metadata
 import griffon.util.CallableWithArgs
+import griffon.util.ConfigUtils
 
 import javax.sql.DataSource
 
@@ -52,8 +53,7 @@ final class ActivitiConnector implements ActivitiProvider {
     // ======================================================
 
     ConfigObject createConfig(GriffonApplication app) {
-        def engineClass = app.class.classLoader.loadClass('ActivitiConfig')
-        new ConfigSlurper(Environment.current.name).parse(engineClass)
+        ConfigUtils.loadConfigWithI18n('ActivitiConfig')
     }
 
     private ConfigObject narrowConfig(ConfigObject config, String engineName) {

@@ -27,7 +27,7 @@ final class ActivitiEnhancer {
     private static final Logger LOG = LoggerFactory.getLogger(ActivitiEnhancer)
 
     private ActivitiEnhancer() {}
-    
+
     static void enhance(MetaClass mc, ActivitiProvider provider = ProcessEngineHolder.instance) {
         if(LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
         mc.withActiviti = {Closure closure ->

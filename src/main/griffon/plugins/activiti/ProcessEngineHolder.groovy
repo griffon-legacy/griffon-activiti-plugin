@@ -34,7 +34,7 @@ class ProcessEngineHolder implements ActivitiProvider {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessEngineHolder)
     private static final Object[] LOCK = new Object[0]
     private final Map<String, ProcessEngine> engines = [:]
-  
+
     String[] getEngineNames() {
         List<String> engineNames = new ArrayList().addAll(engines.keySet())
         engineNames.toArray(new String[engineNames.size()])
@@ -62,12 +62,12 @@ class ProcessEngineHolder implements ActivitiProvider {
         callable.args = [engineName, engine] as Object[]
         return callable.call()
     }
-    
+
     boolean isEngineConnected(String engineName) {
         if(isBlank(engineName)) engineName = 'default'
         retrieveEngine(engineName) != null
     }
-    
+
     void disconnectEngine(String engineName) {
         if(isBlank(engineName)) engineName = 'default'
         storeEngine(engineName, null)
@@ -81,7 +81,7 @@ class ProcessEngineHolder implements ActivitiProvider {
             ConfigObject config = ActivitiConnector.instance.createConfig(app)
             engine = ActivitiConnector.instance.connect(app, config, engineName)
         }
-        
+
         if(engine == null) {
             throw new IllegalArgumentException("No such activiti engine configuration for name $engineName")
         }
