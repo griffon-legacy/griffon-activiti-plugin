@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,23 +24,24 @@ import org.slf4j.LoggerFactory
  * @author Andres Almiray
  */
 final class ActivitiEnhancer {
+    private static final String DEFAULT = 'default'
     private static final Logger LOG = LoggerFactory.getLogger(ActivitiEnhancer)
 
     private ActivitiEnhancer() {}
-
-    static void enhance(MetaClass mc, ActivitiProvider provider = ProcessEngineHolder.instance) {
+    
+    static void enhance(MetaClass mc, ActivitiProvider provider = DefaultActivitiProvider.instance) {
         if(LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
         mc.withActiviti = {Closure closure ->
-            provider.withActiviti('default', closure)
+            provider.withActiviti(DEFAULT, closure)
         }
-        mc.withActiviti << {String engineName, Closure closure ->
-            provider.withActiviti(engineName, closure)
+        mc.withActiviti << {String processEngineName, Closure closure ->
+            provider.withActiviti(processEngineName, closure)
         }
         mc.withActiviti << {CallableWithArgs callable ->
-            provider.withActiviti('default', callable)
+            provider.withActiviti(DEFAULT, callable)
         }
-        mc.withActiviti << {String engineName, CallableWithArgs callable ->
-            provider.withActiviti(engineName, callable)
+        mc.withActiviti << {String processEngineName, CallableWithArgs callable ->
+            provider.withActiviti(processEngineName, callable)
         }
     }
 }

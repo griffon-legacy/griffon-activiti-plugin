@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,66 +16,58 @@
 
 package griffon.plugins.activiti
 
-import org.activiti.engine.*
+import org.activiti.engine.ProcessEngine
 
 import griffon.core.GriffonApplication
 import griffon.util.ApplicationHolder
-import griffon.util.CallableWithArgs
 import static griffon.util.GriffonNameUtils.isBlank
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * @author Andres Almiray
  */
-@Singleton
-class ProcessEngineHolder implements ActivitiProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessEngineHolder)
+class ProcessEngineHolder {
+    private static final String DEFAULT = 'default'
     private static final Object[] LOCK = new Object[0]
     private final Map<String, ProcessEngine> engines = [:]
 
-    String[] getEngineNames() {
+    private static final ProcessEngineHolder INSTANCE
+
+    static {
+        INSTANCE = new ProcessEngineHolder()
+    }
+
+    static ProcessEngineHolder getInstance() {
+        INSTANCE
+    }
+
+    String[] getProcessEngineNames() {
         List<String> engineNames = new ArrayList().addAll(engines.keySet())
         engineNames.toArray(new String[engineNames.size()])
     }
 
-    ProcessEngine getEngine(String engineName = 'default') {
-        if(isBlank(engineName)) engineName = 'default'
-        retrieveEngine(engineName)
+    ProcessEngine getProcessEngine(String engineName = DEFAULT) {
+        if(isBlank(engineName)) engineName = DEFAULT
+        retrieveProcessEngine(engineName)
     }
 
-    void setEngine(String engineName = 'default', ProcessEngine engine) {
-        if(isBlank(engineName)) engineName = 'default'
-        storeEngine(engineName, engine)
+    void setProcessEngine(String engineName = DEFAULT, ProcessEngine engine) {
+        if(isBlank(engineName)) engineName = DEFAULT
+        storeProcessEngine(engineName, engine)
     }
 
-    Object withActiviti(String engineName = 'default', Closure closure) {
-        ProcessEngine engine = fetchEngine(engineName)
-        if(LOG.debugEnabled) LOG.debug("Executing block with engine '$engineName'")
-        return closure(engineName, engine)
+    boolean isProcessEngineConnected(String engineName) {
+        if(isBlank(engineName)) engineName = DEFAULT
+        retrieveProcessEngine(engineName) != null
     }
 
-    public <T> T withActiviti(String engineName = 'default', CallableWithArgs<T> callable) {
-        ProcessEngine engine = fetchEngine(engineName)
-        if(LOG.debugEnabled) LOG.debug("Executing block with engine '$engineName'")
-        callable.args = [engineName, engine] as Object[]
-        return callable.call()
+    void disconnectProcessEngine(String engineName) {
+        if(isBlank(engineName)) engineName = DEFAULT
+        storeProcessEngine(engineName, null)
     }
 
-    boolean isEngineConnected(String engineName) {
-        if(isBlank(engineName)) engineName = 'default'
-        retrieveEngine(engineName) != null
-    }
-
-    void disconnectEngine(String engineName) {
-        if(isBlank(engineName)) engineName = 'default'
-        storeEngine(engineName, null)
-    }
-
-    private ProcessEngine fetchEngine(String engineName) {
-        if(isBlank(engineName)) engineName = 'default'
-        ProcessEngine engine = retrieveEngine(engineName)
+    ProcessEngine fetchProcessEngine(String engineName) {
+        if(isBlank(engineName)) engineName = DEFAULT
+        ProcessEngine engine = retrieveProcessEngine(engineName)
         if(engine == null) {
             GriffonApplication app = ApplicationHolder.application
             ConfigObject config = ActivitiConnector.instance.createConfig(app)
@@ -88,13 +80,13 @@ class ProcessEngineHolder implements ActivitiProvider {
         engine
     }
 
-    private ProcessEngine retrieveEngine(String engineName) {
+    private ProcessEngine retrieveProcessEngine(String engineName) {
         synchronized(LOCK) {
             engines[engineName]
         }
     }
 
-    private void storeEngine(String engineName, ProcessEngine engine) {
+    private void storeProcessEngine(String engineName, ProcessEngine engine) {
         synchronized(LOCK) {
             engines[engineName] = engine
         }

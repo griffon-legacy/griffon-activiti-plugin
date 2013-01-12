@@ -22,7 +22,11 @@ import groovy.lang.Closure;
 /**
  * @author Andres Almiray
  */
-public interface ActivitiProvider {
+public interface ActivitiContributionHandler {
+    void setActivitiProvider(ActivitiProvider provider);
+
+    ActivitiProvider getActivitiProvider();
+
     <R> R withActiviti(Closure<R> closure);
 
     <R> R withActiviti(String processEngineName, Closure<R> closure);

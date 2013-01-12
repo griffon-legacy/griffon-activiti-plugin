@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,7 @@ import org.activiti.engine.repository.*
 import griffon.core.GriffonApplication
 import griffon.util.Environment
 import griffon.util.Metadata
-import griffon.util.CallableWithArgs
 import griffon.util.ConfigUtils
-
-import javax.sql.DataSource
 
 import griffon.plugins.datasource.DataSourceHolder
 import griffon.plugins.datasource.DataSourceConnector
@@ -39,48 +36,39 @@ import org.slf4j.LoggerFactory
  * @author Andres Almiray
  */
 @Singleton
-final class ActivitiConnector implements ActivitiProvider {
+final class ActivitiConnector {
+    private static final String DEFAULT = 'default'
     private static final Logger LOG = LoggerFactory.getLogger(ActivitiConnector)
-
-    Object withActiviti(String engineName = 'default', Closure closure) {
-        ProcessEngineHolder.instance.withActiviti(engineName, closure)
-    }
-
-    public <T> T withActiviti(String engineName = 'default', CallableWithArgs<T> callable) {
-        return ProcessEngineHolder.instance.withActiviti(engineName, callable)
-    }
-
-    // ======================================================
 
     ConfigObject createConfig(GriffonApplication app) {
         ConfigUtils.loadConfigWithI18n('ActivitiConfig')
     }
 
     private ConfigObject narrowConfig(ConfigObject config, String engineName) {
-        return engineName == 'default' ? config.processEngine : config.processEngines[engineName]
+        return engineName == DEFAULT ? config.processEngine : config.processEngines[engineName]
     }
 
-    ProcessEngine connect(GriffonApplication app, ConfigObject config, String engineName = 'default') {
-        if (ProcessEngineHolder.instance.isEngineConnected(engineName)) {
-            return ProcessEngineHolder.instance.getEngine(engineName)
+    ProcessEngine connect(GriffonApplication app, ConfigObject config, String engineName = DEFAULT) {
+        if (ProcessEngineHolder.instance.isProcessEngineConnected(engineName)) {
+            return ProcessEngineHolder.instance.getProcessEngine(engineName)
         }
 
         config = narrowConfig(config, engineName)
         app.event('ActivitiConnectStart', [config, engineName])
         ProcessEngine engine = startActiviti(app, config, engineName)
-        ProcessEngineHolder.instance.setEngine(engineName, engine)
+        ProcessEngineHolder.instance.setProcessEngine(engineName, engine)
         app.event('ActivitiConnectEnd', [engineName, engine])
         engine
     }
 
-    void disconnect(GriffonApplication app, ConfigObject config, String engineName = 'default') {
-        if (ProcessEngineHolder.instance.isEngineConnected(engineName)) {
+    void disconnect(GriffonApplication app, ConfigObject config, String engineName = DEFAULT) {
+        if (ProcessEngineHolder.instance.isProcessEngineConnected(engineName)) {
             config = narrowConfig(config, engineName)
-            ProcessEngine engine = ProcessEngineHolder.instance.getEngine(engineName)
+            ProcessEngine engine = ProcessEngineHolder.instance.getProcessEngine(engineName)
             app.event('ActivitiDisconnectStart', [config, engineName, engine])
             stopActiviti(app, config, engine, engineName)
             app.event('ActivitiDisconnectEnd', [config, engineName])
-            ProcessEngineHolder.instance.disconnectEngine(engineName)
+            ProcessEngineHolder.instance.disconnectProcessEngine(engineName)
         }
     }
 
@@ -88,12 +76,8 @@ final class ActivitiConnector implements ActivitiProvider {
         ProcessEngineConfiguration engineConfiguration = ProcessEngineConfiguration.createProcessEngineConfigurationFromResourceDefault()
         config.each { key, value ->
             if (key == 'dataSource' && value instanceof CharSequence) {
-                if (!DataSourceHolder.instance.isDataSourceConnected(value)) {
-                    ConfigObject dsconfig = DataSourceConnector.instance.createConfig(app)
-                    value = DataSourceConnector.instance.connect(app, dsconfig, value)
-                } else {
-                    value = DataSourceHolder.instance.getDataSource(value)
-                }
+                String dataSourceName = value.toString()
+                value = DataSourceHolder.instance.fetchDataSource(dataSourceName)
             }
             engineConfiguration[key] = value
         }
@@ -121,9 +105,10 @@ final class ActivitiConnector implements ActivitiProvider {
         engine.close()
         config.each { key, value ->
             if (key == 'dataSource' && value instanceof CharSequence) {
-                if (DataSourceHolder.instance.isDataSourceConnected(value)) {
+                String dataSourceName = value.toString()
+                if (DataSourceHolder.instance.isDataSourceConnected(dataSourceName)) {
                     ConfigObject dsconfig = DataSourceConnector.instance.createConfig(app)
-                    DataSourceConnector.instance.disconnect(app, dsconfig, value)
+                    DataSourceConnector.instance.disconnect(app, dsconfig, dataSourceName)
                 }
             }
         }

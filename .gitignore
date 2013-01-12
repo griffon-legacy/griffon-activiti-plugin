@@ -1,2 +1,6 @@
 target
 release_notes.md
+.idea
+activiti-griffonPluginFixes.iml
+activiti-griffonPlugins.iml
+activiti.iml

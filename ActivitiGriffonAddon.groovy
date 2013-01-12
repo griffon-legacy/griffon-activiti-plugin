@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import griffon.core.GriffonClass
 import griffon.core.GriffonApplication
 import griffon.plugins.activiti.ActivitiConnector
 import griffon.plugins.activiti.ActivitiEnhancer
+import griffon.plugins.activiti.ActivitiContributionHandler
 
 /**
  * @author Andres Almiray
@@ -32,6 +33,7 @@ class ActivitiGriffonAddon {
         def types = app.config.griffon?.activiti?.injectInto ?: ['controller']
         for(String type : types) {
             for(GriffonClass gc : app.artifactManager.getClassesOfType(type)) {
+                if (ActivitiContributionHandler.isAssignableFrom(gc.clazz)) continue
                 ActivitiEnhancer.enhance(gc.metaClass)
             }
         }

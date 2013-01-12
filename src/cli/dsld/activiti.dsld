@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package griffon.plugins.activiti;
-
-import griffon.util.CallableWithArgs;
-import groovy.lang.Closure;
+package dsld
 
 /**
  * @author Andres Almiray
  */
-public interface ActivitiProvider {
-    <R> R withActiviti(Closure<R> closure);
 
-    <R> R withActiviti(String processEngineName, Closure<R> closure);
-
-    <R> R withActiviti(CallableWithArgs<R> callable);
-
-    <R> R withActiviti(String processEngineName, CallableWithArgs<R> callable);
+contribute(enclosingClass(annotatedBy('griffon.plugins.activiti.ActivitiAware'))) {
+    provider = "Activiti DSL"
+    delegatesTo "griffon.plugins.activiti.ActivitiContributionHandler"
 }

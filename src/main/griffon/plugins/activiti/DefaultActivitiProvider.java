@@ -16,18 +16,24 @@
 
 package griffon.plugins.activiti;
 
-import griffon.util.CallableWithArgs;
-import groovy.lang.Closure;
+import org.activiti.engine.ProcessEngine;
 
 /**
  * @author Andres Almiray
  */
-public interface ActivitiProvider {
-    <R> R withActiviti(Closure<R> closure);
+public class DefaultActivitiProvider extends AbstractActivitiProvider {
+    private static final DefaultActivitiProvider INSTANCE;
 
-    <R> R withActiviti(String processEngineName, Closure<R> closure);
+    static {
+        INSTANCE = new DefaultActivitiProvider();
+    }
 
-    <R> R withActiviti(CallableWithArgs<R> callable);
+    public static DefaultActivitiProvider getInstance() {
+        return INSTANCE;
+    }
 
-    <R> R withActiviti(String processEngineName, CallableWithArgs<R> callable);
+    @Override
+    protected ProcessEngine getProcessEngine(String processEngineName) {
+        return ProcessEngineHolder.getInstance().fetchProcessEngine(processEngineName);
+    }
 }
