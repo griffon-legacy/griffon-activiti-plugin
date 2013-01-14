@@ -41,7 +41,10 @@ final class ActivitiConnector {
     private static final Logger LOG = LoggerFactory.getLogger(ActivitiConnector)
 
     ConfigObject createConfig(GriffonApplication app) {
-        ConfigUtils.loadConfigWithI18n('ActivitiConfig')
+        if (!app.config.pluginConfig.activiti) {
+            app.config.pluginConfig.activiti = ConfigUtils.loadConfigWithI18n('ActivitiConfig')
+        }
+        app.config.pluginConfig.activiti
     }
 
     private ConfigObject narrowConfig(ConfigObject config, String engineName) {

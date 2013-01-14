@@ -24,12 +24,10 @@ import griffon.plugins.activiti.ActivitiContributionHandler
  * @author Andres Almiray
  */
 class ActivitiGriffonAddon {
-    void addonInit(GriffonApplication app) {
+    void addonPostInit(GriffonApplication app) {
         ConfigObject config = ActivitiConnector.instance.createConfig(app)
         ActivitiConnector.instance.connect(app, config)
-    }
 
-    void addonPostInit(GriffonApplication app) {
         def types = app.config.griffon?.activiti?.injectInto ?: ['controller']
         for(String type : types) {
             for(GriffonClass gc : app.artifactManager.getClassesOfType(type)) {
