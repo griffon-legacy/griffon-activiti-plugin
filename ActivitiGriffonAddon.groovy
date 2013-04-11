@@ -20,14 +20,17 @@ import griffon.plugins.activiti.ActivitiConnector
 import griffon.plugins.activiti.ActivitiEnhancer
 import griffon.plugins.activiti.ActivitiContributionHandler
 
+import static griffon.util.ConfigUtils.getConfigValueAsBoolean
+
 /**
  * @author Andres Almiray
  */
 class ActivitiGriffonAddon {
     void addonPostInit(GriffonApplication app) {
         ConfigObject config = ActivitiConnector.instance.createConfig(app)
-        ActivitiConnector.instance.connect(app, config)
-
+        if (getConfigValueAsBoolean(app.config, 'griffon.activiti.connect.onstartup', true)) {
+            ActivitiConnector.instance.connect(app, config)
+        }
         def types = app.config.griffon?.activiti?.injectInto ?: ['controller']
         for(String type : types) {
             for(GriffonClass gc : app.artifactManager.getClassesOfType(type)) {

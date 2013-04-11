@@ -48,7 +48,12 @@ final class ActivitiConnector {
     }
 
     private ConfigObject narrowConfig(ConfigObject config, String engineName) {
-        return engineName == DEFAULT ? config.processEngine : config.processEngines[engineName]
+        if (config.containsKey('processEngine') && engineName == DEFAULT) {
+            return config.processEngine
+        } else if (config.containsKey('processEngines')) {
+            return config.processEngines[engineName]
+        }
+        return config
     }
 
     ProcessEngine connect(GriffonApplication app, ConfigObject config, String engineName = DEFAULT) {

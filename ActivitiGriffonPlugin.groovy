@@ -19,11 +19,11 @@
  */
 class ActivitiGriffonPlugin {
     // the plugin version
-    String version = '1.0.1'
+    String version = '1.1.0'
     // the version or versions of Griffon the plugin is designed for
     String griffonVersion = '1.2.0 > *'
     // the other plugins this plugin depends on
-    Map dependsOn = [datasource: '1.1.0']
+    Map dependsOn = [datasource: '1.2.0']
     // resources that are included in plugin packaging
     List pluginIncludes = []
     // the plugin license
@@ -147,6 +147,22 @@ connecting to a process engine whose name is 'internal' can be done in this way
 
 This block can be used inside the `environments()` block in the same way as the
 default processEngine block is used.
+
+### Configuration Storage
+
+The plugin will load and store the contents of `ActivitiConfig.groovy` inside the
+application's configuration, under the `pluginConfig` namespace. You may retrieve
+and/or update values using
+
+    app.config.pluginConfig.activiti
+
+### Connect at Startup
+
+The plugin will attempt a connection to the default database at startup. If this
+behavior is not desired then specify the following configuration flag in
+`Config.groovy`
+
+    griffon.activiti.connect.onstartup = false
 
 Testing
 -------

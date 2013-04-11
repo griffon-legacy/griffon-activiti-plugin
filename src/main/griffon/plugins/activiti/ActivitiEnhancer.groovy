@@ -30,7 +30,7 @@ final class ActivitiEnhancer {
     private ActivitiEnhancer() {}
     
     static void enhance(MetaClass mc, ActivitiProvider provider = DefaultActivitiProvider.instance) {
-        if(LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
+        if (LOG.debugEnabled) LOG.debug("Enhancing $mc with $provider")
         mc.withActiviti = {Closure closure ->
             provider.withActiviti(DEFAULT, closure)
         }

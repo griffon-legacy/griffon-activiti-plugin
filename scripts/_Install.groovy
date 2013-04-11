@@ -23,7 +23,7 @@ includeTargets << griffonScript('_GriffonCreateArtifacts')
 argsMap = argsMap ?: [:]
 argsMap['skip-package-prompt'] = true
 
-if(!new File("${basedir}/griffon-app/conf/ActivitiConfig.groovy").exists()) {
+if (!new File("${basedir}/griffon-app/conf/ActivitiConfig.groovy").exists()) {
    createArtifact(
       name:   "ActivitiConfig",
       suffix: "",
@@ -31,7 +31,7 @@ if(!new File("${basedir}/griffon-app/conf/ActivitiConfig.groovy").exists()) {
       path:   "griffon-app/conf")
 }
 
-if(!new File("${basedir}/griffon-app/resources/activiti.cfg.xml").exists()) {
+if (!new File("${basedir}/griffon-app/resources/activiti.cfg.xml").exists()) {
     ant.copy(file: "${activitiPluginDir}/src/templates/default-activiti.cfg.xml",
            tofile: "${basedir}/griffon-app/resources/activiti.cfg.xml")
 }

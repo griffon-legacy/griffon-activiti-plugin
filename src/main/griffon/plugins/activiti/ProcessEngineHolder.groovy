@@ -46,35 +46,35 @@ class ProcessEngineHolder {
     }
 
     ProcessEngine getProcessEngine(String engineName = DEFAULT) {
-        if(isBlank(engineName)) engineName = DEFAULT
+        if (isBlank(engineName)) engineName = DEFAULT
         retrieveProcessEngine(engineName)
     }
 
     void setProcessEngine(String engineName = DEFAULT, ProcessEngine engine) {
-        if(isBlank(engineName)) engineName = DEFAULT
+        if (isBlank(engineName)) engineName = DEFAULT
         storeProcessEngine(engineName, engine)
     }
 
     boolean isProcessEngineConnected(String engineName) {
-        if(isBlank(engineName)) engineName = DEFAULT
+        if (isBlank(engineName)) engineName = DEFAULT
         retrieveProcessEngine(engineName) != null
     }
 
     void disconnectProcessEngine(String engineName) {
-        if(isBlank(engineName)) engineName = DEFAULT
+        if (isBlank(engineName)) engineName = DEFAULT
         storeProcessEngine(engineName, null)
     }
 
     ProcessEngine fetchProcessEngine(String engineName) {
-        if(isBlank(engineName)) engineName = DEFAULT
+        if (isBlank(engineName)) engineName = DEFAULT
         ProcessEngine engine = retrieveProcessEngine(engineName)
-        if(engine == null) {
+        if (engine == null) {
             GriffonApplication app = ApplicationHolder.application
             ConfigObject config = ActivitiConnector.instance.createConfig(app)
             engine = ActivitiConnector.instance.connect(app, config, engineName)
         }
 
-        if(engine == null) {
+        if (engine == null) {
             throw new IllegalArgumentException("No such activiti engine configuration for name $engineName")
         }
         engine
