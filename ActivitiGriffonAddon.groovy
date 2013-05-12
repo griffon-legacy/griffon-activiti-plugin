@@ -27,10 +27,7 @@ import static griffon.util.ConfigUtils.getConfigValueAsBoolean
  */
 class ActivitiGriffonAddon {
     void addonPostInit(GriffonApplication app) {
-        ConfigObject config = ActivitiConnector.instance.createConfig(app)
-        if (getConfigValueAsBoolean(app.config, 'griffon.activiti.connect.onstartup', true)) {
-            ActivitiConnector.instance.connect(app, config)
-        }
+        ActivitiConnector.instance.createConfig(app)
         def types = app.config.griffon?.activiti?.injectInto ?: ['controller']
         for(String type : types) {
             for(GriffonClass gc : app.artifactManager.getClassesOfType(type)) {
@@ -41,6 +38,12 @@ class ActivitiGriffonAddon {
     }
 
     Map events = [
+        LoadAddonsEnd: { app, addons ->
+            if (getConfigValueAsBoolean(app.config, 'griffon.activiti.connect.onstartup', true)) {
+                ConfigObject config = ActivitiConnector.instance.createConfig(app)
+                ActivitiConnector.instance.connect(app, config)
+            }
+        },
         ShutdownStart: { app ->
             ConfigObject config = ActivitiConnector.instance.createConfig(app)
             ActivitiConnector.instance.disconnect(app, config)

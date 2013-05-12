@@ -32,6 +32,8 @@ public class DefaultActivitiProvider extends AbstractActivitiProvider {
         return INSTANCE;
     }
 
+    private DefaultActivitiProvider() {}
+
     @Override
     protected ProcessEngine getProcessEngine(String processEngineName) {
         return ProcessEngineHolder.getInstance().fetchProcessEngine(processEngineName);

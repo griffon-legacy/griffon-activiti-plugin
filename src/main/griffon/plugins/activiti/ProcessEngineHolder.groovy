@@ -40,6 +40,8 @@ class ProcessEngineHolder {
         INSTANCE
     }
 
+    private ProcessEngineHolder() {}
+
     String[] getProcessEngineNames() {
         List<String> engineNames = new ArrayList().addAll(engines.keySet())
         engineNames.toArray(new String[engineNames.size()])
